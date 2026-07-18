@@ -32,4 +32,19 @@ void load_db(void) {
   infile.close();
 }
 
+int setup_server(int port) {
+  int fd = socket(AF_INET, SOCK_STREAM, 0);
+  if(fd = -1)
+    return -1;
+  struct sockaddr_in servaddr;
+  bzero(&servaddr, sizeof(servaddr));
+  servaddr.sin_family = AF_INET;
+  servaddr.sin_port = htonl(port);
+  servaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
+  if(bind(fd, (struct sockaddr *)&servaddr, sizeof(servaddr)) != 0 || listen(fd, 100) != 0) {
+    close(fd);
+    return -1; 
+  }
+  return fd;
+}
 
