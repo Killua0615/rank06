@@ -43,7 +43,7 @@ int setup_server(int port) {
   servaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
   if(bind(fd, (struct sockaddr *)&servaddr, sizeof(servaddr)) != 0 || listen(fd, 100) != 0) {
     close(fd);
-    return -1; 
+    return -1;
   }
   return fd;
 }
