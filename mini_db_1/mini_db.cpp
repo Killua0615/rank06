@@ -58,11 +58,11 @@ void handle_line(int fd, const std::string &line) {
     send_res(fd, "0\n");
   } else if (cmd == "GET" && !key.empty() && val.empty()) {
     if (g_db.count(key))
-      send_res(fd, "0" + g_db[key] + "\n");
+      send_res (fd, "0 " + g_db[key] + "\n");
     else
       send_res(fd, "1\n");
   } else if (cmd == "DELETE" && !key.empty() && val.empty()) {
-    if (g_db.erase(key))
+    if (g_db.erase(key)) 
       send_res(fd, "0\n");
     else
       send_res(fd, "1\n");
