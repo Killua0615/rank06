@@ -4,12 +4,12 @@ std::string g_filename;
 std::map<std::string, std::string> g_db;
 int g_sockfd = -1;
 
-void save_db_and_exit(int sig) {
+void seva_db_and_exit(int sig) {
   (void)sig;
   std::ofstream file(g_filename.c_str());
   if(file.is_open()) {
     std::map<std::string, std::string>::iterator it;
-    for(it = g_db.begin(); it != g_db.end(); ++it)
+    for (it = g_db.begin(); it != g_db.end(); ++it)
       file << it->first << " " << it->second << "\n";
     file.close();
   }
@@ -34,10 +34,10 @@ void load_db(void) {
 
 int setup_server(int port) {
   int fd = socket(AF_INET, SOCK_STREAM, 0);
-  if(fd = -1)
+  if (fd == -1)
     return -1;
   struct sockaddr_in servaddr;
-  bzero(&servaddr, sizeof(servaddr));
+  bzero(&servaddr , sizeof(servaddr));
   servaddr.sin_family = AF_INET;
   servaddr.sin_port = htonl(port);
   servaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
@@ -48,3 +48,25 @@ int setup_server(int port) {
   return fd;
 }
 
+void handle_line(int fd, const std::string &line) {
+  std::stringstream ss(line);
+  std::string cmd, key, val;
+  ss >> cmd >> key >> val;
+
+  if (cmd == "POST" && !key.empty() && !val.empty()) {
+    g_db[key] = val;
+    send_res(fd, "0\n");
+  } else if (cmd == "GET" && !key.empty() && val.empty()) {
+    if (g_db.count(key))
+      send_res(fd, "0" + g_db[key] + "\n");
+    else
+      send_res(fd, "1\n");
+  } else if (cmd == "DELETE" && !key.empty() && val.empty()) {
+    if (g_db.erase(key))
+      send_res(fd, "0\n");
+    else
+      send_res(fd, "1\n");
+  } else {
+    send_res(fd, "2\n");
+  }
+}
