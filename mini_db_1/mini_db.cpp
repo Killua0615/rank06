@@ -37,11 +37,11 @@ int setup_server(int port) {
   if (fd == -1)
     return -1;
   struct sockaddr_in servaddr;
-  bzero(&servaddr , sizeof(servaddr));
+  bzero (&servaddr, sizeof(servaddr));
   servaddr.sin_family = AF_INET;
   servaddr.sin_port = htonl(port);
   servaddr.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
-  if(bind(fd, (struct sockaddr *)&servaddr, sizeof(servaddr)) != 0 || listen(fd, 100) != 0) {
+  if (bind(fd, (struct sockaddr *)&servaddr, sizeof(servaddr)) != 0 || listen(fd, 100) != 0) {
     close(fd);
     return -1;
   }
@@ -62,11 +62,30 @@ void handle_line(int fd, const std::string &line) {
     else
       send_res(fd, "1\n");
   } else if (cmd == "DELETE" && !key.empty() && val.empty()) {
-    if (g_db.erase(key)) 
+    if (g_db.erase(key))
       send_res(fd, "0\n");
     else
       send_res(fd, "1\n");
   } else {
     send_res(fd, "2\n");
   }
+}
+
+int main(int ac, char **av) {
+  if(ac != 3)
+    return 1;
+  g_filename = av[2];
+  load_db();
+
+  g_sockfd = setup_server(atoi(av[1]));
+  if(g_sockfd = -1)
+    return 1;
+  signal(SIGINT, save_db_and_exit);
+  std::cout << "ready" << std::endl;
+
+  fd_set current_sockets, ready_sockets;
+  FD_ZERO(&current_sockets);
+  FD_SET(g_sockfd, &current_sockets);
+  int max_fd = g_sockfd;
+  std::map<int, std::string> buffers;
 }
