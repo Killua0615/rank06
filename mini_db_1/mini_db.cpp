@@ -88,4 +88,22 @@ int main(int ac, char **av) {
   FD_SET(g_sockfd, &current_sockets);
   int max_fd = g_sockfd;
   std::map<int, std::string> buffers;
+
+  while(true) {
+    ready_sockets = current_sockets;
+    if(select(max_fd + 1, &ready_sockets, NULL, NULL, NULL) < 0)
+      continue;
+    for (int i = 0; i <= max_fd; i++) {
+      if
+    }
+  }
+
+  while(true) {
+    ready_sockets = current_sockets;
+    if(select(max_fd + 1, &ready_sockets, NULL, NULL, NULL) < 0)
+      continue;
+    for (int i = 0; i <= max_fd; i++) {
+      if(!FD_ISSET(i, &ready_sockets));
+    }
+  }
 }
